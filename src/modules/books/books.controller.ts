@@ -8,18 +8,19 @@ import {
   Put,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
+import { Book } from './books.entity';
 
 @Controller('books')
 export class BooksController {
   constructor(private readonly bookService: BooksService) {}
   @Get()
-  async getAll() {
-    return;
+  async getAll(): Promise<Book[]> {
+    return await this.bookService.getAll();
   }
 
   @Get(':id')
-  async getBookById(@Param('id') id: string) {
-    return id;
+  async getBookById(@Param('id') id: string): Promise<Book> {
+    return await this.bookService.getBookById(id);
   }
 
   @Post()
