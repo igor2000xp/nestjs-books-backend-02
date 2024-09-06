@@ -24,7 +24,7 @@ export class BooksController {
   }
 
   @Post()
-  async createBook(@Body() bookDto: any) {
+  async createBook(@Body() bookDto: Book) {
     return bookDto;
   }
 

@@ -6,14 +6,24 @@ import { Book } from './books.entity';
 export class BooksService {
   constructor(private readonly booksRepository: BooksRepository) {}
 
-  // Получить список всех книг
+  // Get the list of books
   async getAll(): Promise<Book[]> {
     return await this.booksRepository.findAll();
   }
 
-  // Получить книгу по ID
+  // Get book by Id
   async getBookById(id: string): Promise<Book> {
     const idN = Number(id);
     return await this.booksRepository.findOneOrNotFoundFail(idN);
+  }
+
+  // Create book and save it into DB
+  async createBook(dto: Book): Promise<Book> {
+    const book = new Book();
+    book.title = dto.title;
+    book.author = dto.author;
+    book.ageRestriction = dto.ageRestriction;
+
+    return await this.booksRepository.save(book);
   }
 }
