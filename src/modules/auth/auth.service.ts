@@ -3,11 +3,7 @@ import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { UsersRepository } from '../users/users.repository';
 import * as bcrypt from 'bcrypt';
-import { JwtService } from "@nestjs/jwt";
-
-class Payload {
-  name: string;
-}
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -40,7 +36,7 @@ export class AuthService {
     );
     if (!user) throw new UnauthorizedException();
 
-    return this.jwt.sign({ userId: user.id });
+    return this.jwt.sign({ userId: user.id, name: user.name });
   }
 
   async validateUser(email: string, password: string) {
