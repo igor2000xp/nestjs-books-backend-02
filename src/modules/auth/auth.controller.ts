@@ -1,19 +1,47 @@
-import { Controller, Get, Post, Body, Patch, Param, Request, Delete, UseGuards } from "@nestjs/common";
+import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
-// import { AuthGuard } from '@nestjs/passport';
-import { LocalAuthGuard } from './guards/local-auth.guard';
 
+import {
+  ApiBadRequestResponse,
+  ApiForbiddenResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { LogoutMessage } from './dto/message-logout.dto';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { LoginUserDto } from '../users/dto/login-user.dto';
+import { JwtService } from '@nestjs/jwt';
+
+@ApiTags('Authorization')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly jwt: JwtService,
+  ) {}
 
+  // @UsePipes(new ValidationPipe())
   @UseGuards(LocalAuthGuard)
+  // @UseGuards(AuthGuard('local'))
+  @ApiOperation({ summary: 'To login you need the pass and email' })
+  @ApiResponse({
+    status: 201,
+    type: LogoutMessage,
+    description: 'Everything is OK',
+  })
+  @ApiBadRequestResponse({ description: 'Validation error' })
+  @ApiUnauthorizedResponse({ description: 'Login or password incorrect' })
+  @ApiForbiddenResponse({ description: 'User blocked' })
+  // @HttpCode(HttpStatus.OK)
   @Post('login')
-  async login(@Request() userID: { id: string }) {
-    return await this.authService.login(userID.id);
+  async login(@Request() req: { user: string }, @Body() userDto: LoginUserDto) {
+    return {
+      accessToken: this.jwt.sign({ userId: req.user, user: userDto.email }),
+    };
   }
+
   // @Post()
   // create(@Body() createAuthDto: CreateAuthDto) {
   //   return this.authService.create(createAuthDto);

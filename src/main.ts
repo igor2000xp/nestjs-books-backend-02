@@ -17,7 +17,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  //подключение глобального валидационного pipe https://docs.nestjs.com/techniques/validation
+  //подключение глобального validate pipe https://docs.nestjs.com/techniques/validation
   app.useGlobalPipes(
     new ValidationPipe({
       forbidNonWhitelisted: true,
@@ -38,11 +38,50 @@ async function bootstrap() {
     optionsSuccessStatus: HttpStatus.NO_CONTENT,
   });
 
+  //
+
+  // Swagger configuration
+  // const config = new DocumentBuilder()
+  //   .setTitle('My API')
+  //   .setDescription('API description')
+  //   .setVersion('1.0')
+  //   .addBearerAuth() // Add if you want JWT authentication in Swagger
+  //   .build();
+
+  // const document = SwaggerModule.createDocument(app, config);
+
+  // Setup Swagger at the '/api' route
+  // SwaggerModule.setup('api', app, document);
+
+  // const swaggerConfig = new DocumentBuilder()
+  //   .setTitle('Description of BD for Books and Auth')
+  //   .setDescription('Docs for REST API')
+  //   .setVersion('1.0.0')
+  //   .addTag('Created by Igor')
+  //   .addBearerAuth({
+  //     description: `[just text field] Please enter token in following format: Bearer <JWT>`,
+  //     name: 'Authorization',
+  //     bearerFormat: 'Bearer',
+  //     scheme: 'Bearer',
+  //     type: 'http',
+  //     in: 'Header',
+  //   })
+  //   .addGlobalParameters({
+  //     in: 'header',
+  //     allowEmptyValue: true,
+  //     required: false,
+  //     name: 'Content-Language',
+  //     // schema: {
+  //     //   enum: ['ru', 'en'],
+  //     // },
+  //   })
+  //   .build();
+
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Description of BD for Books and Auth')
+    .setTitle('Description of BD for TownSend')
     .setDescription('Docs for REST API')
     .setVersion('1.0.0')
-    .addTag('Created by Igor')
+    .addTag('Created by BackTeam')
     .addBearerAuth({
       description: `[just text field] Please enter token in following format: Bearer <JWT>`,
       name: 'Authorization',
@@ -51,22 +90,17 @@ async function bootstrap() {
       type: 'http',
       in: 'Header',
     })
-    .addGlobalParameters({
-      in: 'header',
-      allowEmptyValue: true,
-      required: false,
-      name: 'Content-Language',
-      schema: {
-        enum: ['ru', 'en'],
-      },
-    })
     .build();
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('docs', app, document, {
-    useGlobalPrefix: true,
-    swaggerOptions: { defaultModelsExpandDepth: -1 },
-  });
 
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api', app, document, { useGlobalPrefix: true });
+
+
+  // const document = SwaggerModule.createDocument(app, swaggerConfig);
+  // SwaggerModule.setup('docs', app, document, {
+  //   useGlobalPrefix: true,
+  //   swaggerOptions: { defaultModelsExpandDepth: -1 },
+  // });
   //получение конфиг сервиса https://docs.nestjs.com/techniques/configuration#using-in-the-maints
   const configService = app.get(ConfigService<ConfigurationType>);
   const port = configService.get('apiSettings.PORT', { infer: true })!;

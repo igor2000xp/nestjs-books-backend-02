@@ -1,6 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersRepository } from '../users/users.repository';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -30,23 +28,34 @@ export class AuthService {
   // remove(id: number) {
   //   return `This action removes a #${id} auth`;
   // }
-  async login(userID: string) {
-    const user = await this.usersRepository.findByIdOrNotFoundFail(
-      Number(userID),
-    );
+  // async login(userID: string) {
+  //   const user = await this.usersRepository.findByIdOrNotFoundFail(
+  //     Number(userID),
+  //   );
+  //   if (!user) throw new UnauthorizedException();
+  //
+  //   return { accessToken: this.jwt.sign({ userId: user.id }) };
+  // }
+
+  async validateUser(name: string, password: string) {
+    const user = await this.usersRepository.findByEmail(name);
     if (!user) throw new UnauthorizedException();
-
-    return this.jwt.sign({ userId: user.id, name: user.name });
-  }
-
-  async validateUser(email: string, password: string) {
-    const user = await this.usersRepository.findByEmail(email);
-
-    if (!user) throw new UnauthorizedException();
-
-    const isEqualPassword = await bcrypt.compare(password, user.passwordHash);
-    if (!isEqualPassword) throw new UnauthorizedException();
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    if (!isPasswordValid) return null;
 
     return user.id;
+  }
+
+  async login(name: string, password: string) {
+    // const user = await this.usersRepository.findByIdOrNotFoundFail(
+    //   Number(userID),
+    // );
+
+    const user = await this.usersRepository.findByEmail(name);
+    if (!user) throw new UnauthorizedException();
+    const isValid = await this.validateUser(name, password);
+    if (!isValid) return null;
+
+    return { accessToken: this.jwt.sign({ userId: user.id }) };
   }
 }
