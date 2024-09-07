@@ -1,9 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { UsersRepository } from '../users/users.repository';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
+  constructor(private readonly usersRepository: UsersRepository) {
+  }
   create(createAuthDto: CreateAuthDto) {
     return 'This action adds a new auth';
   }
@@ -22,5 +26,16 @@ export class AuthService {
 
   remove(id: number) {
     return `This action removes a #${id} auth`;
+  }
+
+  async validateUser(email: string, password: string) {
+    const user = await this.usersRepository.findByEmail(email);
+
+    if (!user) throw new UnauthorizedException();
+
+    const isEqualPassword = await bcrypt.compare(password, user.passwordHash);
+    if (!isEqualPassword) throw new UnauthorizedException();
+
+    return user.id;
   }
 }

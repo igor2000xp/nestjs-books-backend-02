@@ -5,6 +5,8 @@ const getSettings = () => {
   return {
     apiSettings: {
       PORT: parseInt(process.env.PORT!),
+      JWT_SECRET: process.env.JWT_SECRET,
+      JWT_EXPIRE_IN: process.env.JWT_EXPIRE_IN,
     },
     dbSettings: {
       DB_NAME: process.env.DB_NAME,
