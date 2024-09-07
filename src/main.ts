@@ -12,22 +12,20 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ConfigurationType } from './core/config/configurationType';
 import { HttpStatus, ValidationPipe } from '@nestjs/common';
-import cookieParser from 'cookie-parser';
+// import cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
   //подключение глобального валидационного pipe https://docs.nestjs.com/techniques/validation
-  app
-    .useGlobalPipes(
-      new ValidationPipe({
-        forbidNonWhitelisted: true,
-        whitelist: true,
-        transform: true,
-      }),
-    )
-    .use(cookieParser());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      forbidNonWhitelisted: true,
+      whitelist: true,
+      transform: true,
+    }),
+  );
+  // .use(cookieParser());
 
   //разрешены запросы с любых доменов
   app.enableCors({
@@ -72,7 +70,6 @@ async function bootstrap() {
   //получение конфиг сервиса https://docs.nestjs.com/techniques/configuration#using-in-the-maints
   const configService = app.get(ConfigService<ConfigurationType>);
   const port = configService.get('apiSettings.PORT', { infer: true })!;
-
   await app.listen(port);
 }
 bootstrap();

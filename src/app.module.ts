@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import configuration, {
+import getSettings, {
   ConfigurationType,
 } from './core/config/configurationType';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,12 +11,11 @@ import { BooksModule } from './modules/books/books.module';
 
 @Module({
   imports: [
-    BooksModule,
-    UsersModule,
     //подключение и настройка конфиг модуля из пакета @nestjs/config
     //в файле configuration указаны переменные окружения https://docs.nestjs.com/techniques/configuration
     ConfigModule.forRoot({
-      load: [configuration],
+      isGlobal: true,
+      load: [getSettings],
     }),
 
     //подключение и настройка базы данных
@@ -35,12 +34,15 @@ import { BooksModule } from './modules/books/books.module';
           username: databaseSettings.USERNAME,
           password: databaseSettings.PASSWORD,
           database: databaseSettings.DB_NAME,
-          autoLoadEntities: true,
-          synchronize: true,
           logger: 'debug',
+          autoLoadEntities: true,
+          // entities: [User, Book], // Add your entities here
+          synchronize: true, // Set to false in production (auto-sync schema)
         };
       },
     }),
+    UsersModule,
+    BooksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
