@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { BooksRepository } from './books.repository';
 import { Book } from './books.entity';
 // import { PayloadJWTInterface } from '../../core/guards/jwt.strategy';
@@ -10,6 +14,7 @@ export class BooksService {
   constructor(
     private readonly booksRepository: BooksRepository,
     private readonly usersRepository: UsersRepository,
+    // private readonly book: Book,
   ) {}
 
   // Get the list of books
@@ -33,5 +38,12 @@ export class BooksService {
         'You are either not registered or too young, Bro',
       );
     return await Book.createBook(dto, user.id);
+  }
+
+  async updateBook(dto, bookId) {
+    const book = await this.booksRepository.findOneOrNotFoundFail(bookId);
+    if (!book) throw new BadRequestException('Something wrong with book');
+    console.log('dto', dto);
+    return await book.updateBook(dto, book);
   }
 }

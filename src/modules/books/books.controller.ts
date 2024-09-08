@@ -40,9 +40,11 @@ export class BooksController {
     return await this.bookService.createBook(bookDto, req.user.userId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateBook(@Param('id') id: string, @Body() bookDto: UpdateBookDto) {
-    return bookDto;
+    console.log('bookDto', bookDto);
+    return this.bookService.updateBook(bookDto, id);
   }
 
   @Delete(':id')

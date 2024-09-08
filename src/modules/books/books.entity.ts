@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { BasicEntity } from '../../core/entity/basic.entity';
 import { CreateBookDto } from './dto/create-book.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
 
 @Entity('books')
 export class Book extends BasicEntity {
@@ -31,5 +32,15 @@ export class Book extends BasicEntity {
     book.image = newBook.image;
     await book.save();
     return book;
+  }
+
+  public updateBook(dto: UpdateBookDto, book: Book) {
+    book.title = dto.title || book.title;
+    book.author = dto.title || book.author;
+    book.ageRestriction = parseInt(dto.ageRestriction) || book.ageRestriction;
+    book.updatedAt = new Date();
+    book.image = dto.image || book.image;
+    console.log('book', book);
+    return book.save();
   }
 }
