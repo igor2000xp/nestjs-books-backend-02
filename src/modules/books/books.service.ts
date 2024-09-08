@@ -32,14 +32,14 @@ export class BooksService {
     const id = parseInt(userId);
     const user = await this.usersRepository.findByIdOrNotFoundFail(id);
     const isUser = !!user;
-    if (!isUser) throw new UnauthorizedException();
     const isYangUser = user.age < parseInt(dto.ageRestriction);
-    if (isYangUser) throw new ForbiddenException('too yang, Bro');
-    const book = new Book();
-    book.title = dto.title;
-    book.author = dto.author;
-    book.ageRestriction = Number(dto.ageRestriction);
-    book.ownerId = Number(userId);
+    const book = Book.createBook(dto, isUser, isYangUser, user.id);
+    // if (isYangUser) throw new ForbiddenException('too yang, Bro');
+    // const book = new Book();
+    // book.title = dto.title;
+    // book.author = dto.author;
+    // book.ageRestriction = Number(dto.ageRestriction);
+    // book.ownerId = Number(userId);
 
     return await this.booksRepository.save(book);
   }

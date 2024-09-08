@@ -1,14 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '../../core/entity/base.entity';
 import { ForbiddenException } from '@nestjs/common';
-
-export interface newBookInterface {
-  title: string;
-  author: string;
-  ageRestriction: number;
-  ownerId: number;
-  image?: string;
-}
+import { CreateBookDto } from './dto/create-book.dto';
 
 @Entity('books')
 export class Book extends BaseEntity {
@@ -31,9 +24,10 @@ export class Book extends BaseEntity {
   image?: string;
 
   public static createBook(
-    newBook: newBookInterface,
+    newBook: CreateBookDto,
     isUser: boolean,
     isYangUser: boolean,
+    ownerId: number,
   ) {
     if (!isUser && isYangUser)
       throw new ForbiddenException(
@@ -42,8 +36,8 @@ export class Book extends BaseEntity {
     const book = new Book();
     book.title = newBook.title;
     book.author = newBook.title;
-    book.ageRestriction = newBook.ageRestriction;
-    book.ownerId = newBook.ownerId;
+    book.ageRestriction = parseInt(newBook.ageRestriction);
+    book.ownerId = ownerId;
     book.image = newBook.image;
 
     return book;
