@@ -38,7 +38,7 @@ export class AuthController {
   @Post('login')
   async login(@Request() req: { user: string }, @Body() userDto: LoginUserDto) {
     return {
-      accessToken: this.jwt.sign({ userId: req.user, user: userDto.email }),
+      accessToken: this.jwt.sign({ userId: req.user, email: userDto.email }),
     };
   }
 
