@@ -4,7 +4,7 @@ export type ConfigurationType = ReturnType<typeof getSettings>;
 const getSettings = () => {
   return {
     apiSettings: {
-      PORT: parseInt(process.env.PORT!),
+      PORT: 5001,
       JWT_SECRET: process.env.JWT_SECRET,
       JWT_EXPIRE_IN: process.env.JWT_EXPIRE_IN,
     },

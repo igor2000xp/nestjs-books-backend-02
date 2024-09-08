@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiProperty } from '@nestjs/swagger';
+// import { ApiProperty } from '@nestjs/swagger';
 import type { ApiPropertyOptions } from '@nestjs/swagger';
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export function ApiEmail(apiPropertyOptions: ApiPropertyOptions) {
   const { required = true } = apiPropertyOptions;

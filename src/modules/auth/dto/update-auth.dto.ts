@@ -5,5 +5,4 @@ export class UpdateAuthDto extends PartialType(CreateAuthDto) {
   name: string;
 
   password: string;
-
 }
