@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '../../core/entity/base.entity';
-import { ForbiddenException } from "@nestjs/common";
+import { ForbiddenException } from '@nestjs/common';
 
 export interface newBookInterface {
   title: string;
@@ -35,7 +35,10 @@ export class Book extends BaseEntity {
     isUser: boolean,
     isYangUser: boolean,
   ) {
-    if (!isUser && isYangUser) throw new ForbiddenException('You are either not registered or too young, Bro')
+    if (!isUser && isYangUser)
+      throw new ForbiddenException(
+        'You are either not registered or too young, Bro',
+      );
     const book = new Book();
     book.title = newBook.title;
     book.author = newBook.title;
