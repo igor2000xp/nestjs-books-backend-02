@@ -1,10 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { BaseEntity } from '../../core/entity/base.entity';
-import { ForbiddenException } from '@nestjs/common';
+import { BasicEntity } from '../../core/entity/basic.entity';
 import { CreateBookDto } from './dto/create-book.dto';
 
 @Entity('books')
-export class Book extends BaseEntity {
+export class Book extends BasicEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -23,23 +22,14 @@ export class Book extends BaseEntity {
   @Column({ nullable: true })
   image?: string;
 
-  public static createBook(
-    newBook: CreateBookDto,
-    isUser: boolean,
-    isYangUser: boolean,
-    ownerId: number,
-  ) {
-    if (!isUser && isYangUser)
-      throw new ForbiddenException(
-        'You are either not registered or too young, Bro',
-      );
+  public static async createBook(newBook: CreateBookDto, userId: number) {
     const book = new Book();
     book.title = newBook.title;
-    book.author = newBook.title;
+    book.author = newBook.author;
     book.ageRestriction = parseInt(newBook.ageRestriction);
-    book.ownerId = ownerId;
+    book.ownerId = userId;
     book.image = newBook.image;
-
+    await book.save();
     return book;
   }
 }

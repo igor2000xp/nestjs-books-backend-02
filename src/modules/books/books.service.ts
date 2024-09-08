@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { BooksRepository } from './books.repository';
 import { Book } from './books.entity';
 // import { PayloadJWTInterface } from '../../core/guards/jwt.strategy';
@@ -29,18 +25,13 @@ export class BooksService {
 
   // Create book and save it into DB
   async createBook(dto: CreateBookDto, userId: string): Promise<Book> {
-    const id = parseInt(userId);
-    const user = await this.usersRepository.findByIdOrNotFoundFail(id);
-    const isUser = !!user;
-    const isYangUser = user.age < parseInt(dto.ageRestriction);
-    const book = Book.createBook(dto, isUser, isYangUser, user.id);
-    // if (isYangUser) throw new ForbiddenException('too yang, Bro');
-    // const book = new Book();
-    // book.title = dto.title;
-    // book.author = dto.author;
-    // book.ageRestriction = Number(dto.ageRestriction);
-    // book.ownerId = Number(userId);
-
-    return await this.booksRepository.save(book);
+    const user = await this.usersRepository.findByIdOrNotFoundFail(
+      parseInt(userId),
+    );
+    if (!user && user.age < parseInt(dto.ageRestriction))
+      throw new ForbiddenException(
+        'You are either not registered or too young, Bro',
+      );
+    return await Book.createBook(dto, user.id);
   }
 }
