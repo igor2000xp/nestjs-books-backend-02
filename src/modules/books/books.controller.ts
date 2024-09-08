@@ -42,9 +42,12 @@ export class BooksController {
 
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  async updateBook(@Param('id') id: string, @Body() bookDto: UpdateBookDto) {
-    console.log('bookDto', bookDto);
-    return this.bookService.updateBook(bookDto, id);
+  async updateBook(
+    @Param('id') id: string,
+    @Request() req: ReqUserPayLoadJWTInterface,
+    @Body() bookDto: UpdateBookDto,
+  ) {
+    return this.bookService.updateBook(bookDto, id, req.user.userId);
   }
 
   @Delete(':id')

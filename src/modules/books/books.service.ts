@@ -1,20 +1,15 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { BooksRepository } from './books.repository';
 import { Book } from './books.entity';
-// import { PayloadJWTInterface } from '../../core/guards/jwt.strategy';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UsersRepository } from '../users/users.repository';
+import { UpdateBookDto } from './dto/update-book.dto';
 
 @Injectable()
 export class BooksService {
   constructor(
     private readonly booksRepository: BooksRepository,
     private readonly usersRepository: UsersRepository,
-    // private readonly book: Book,
   ) {}
 
   // Get the list of books
@@ -40,10 +35,11 @@ export class BooksService {
     return await Book.createBook(dto, user.id);
   }
 
-  async updateBook(dto, bookId) {
-    const book = await this.booksRepository.findOneOrNotFoundFail(bookId);
-    if (!book) throw new BadRequestException('Something wrong with book');
-    console.log('dto', dto);
-    return await book.updateBook(dto, book);
+  async updateBook(dto: UpdateBookDto, bookId: string, userId: string) {
+    const book = await this.booksRepository.findOneOrNotFoundFail(
+      parseInt(bookId),
+    );
+
+    return await book.updateBook(dto, book, parseInt(userId));
   }
 }
