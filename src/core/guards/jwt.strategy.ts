@@ -9,6 +9,10 @@ export interface PayloadJWTInterface {
   email: string;
 }
 
+export interface ReqUserPayLoadJWTInterface {
+  user: PayloadJWTInterface;
+}
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {

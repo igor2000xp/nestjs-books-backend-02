@@ -12,10 +12,10 @@ export class CreateBookDto {
   @MinLength(2)
   title: string;
 
-  @IsInt()
-  @Min(5)
-  @Max(120)
-  ageRestriction: number;
+  @IsString()
+  // @Min(5)
+  // @Max(120)
+  ageRestriction: string;
 
   @IsString()
   author: string;

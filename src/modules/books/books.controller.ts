@@ -5,14 +5,17 @@ import {
   Get,
   Param,
   Post,
-  Put, UseGuards
-} from "@nestjs/common";
+  Put,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { BooksService } from './books.service';
 import { Book } from './books.entity';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from "../../core/guards/jwt-auth-guard";
+import { JwtAuthGuard } from '../../core/guards/jwt-auth-guard';
+import { ReqUserPayLoadJWTInterface } from '../../core/guards/jwt.strategy';
 
 @ApiTags('Books')
 @Controller('books')
@@ -30,8 +33,11 @@ export class BooksController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createBook(@Body() bookDto: CreateBookDto) {
-    return bookDto;
+  async createBook(
+    @Body() bookDto: CreateBookDto,
+    @Request() req: ReqUserPayLoadJWTInterface,
+  ) {
+    return await this.bookService.createBook(bookDto, req.user.userId);
   }
 
   @Put(':id')
