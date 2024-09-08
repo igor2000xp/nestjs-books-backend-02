@@ -31,9 +31,10 @@ export class BooksService {
   async createBook(dto: CreateBookDto, userId: string): Promise<Book> {
     const id = parseInt(userId);
     const user = await this.usersRepository.findByIdOrNotFoundFail(id);
-    if (!user) throw new UnauthorizedException();
-    if (user.age < parseInt(dto.ageRestriction))
-      throw new ForbiddenException('too yang, Bro');
+    const isUser = !!user;
+    if (!isUser) throw new UnauthorizedException();
+    const isYangUser = user.age < parseInt(dto.ageRestriction);
+    if (isYangUser) throw new ForbiddenException('too yang, Bro');
     const book = new Book();
     book.title = dto.title;
     book.author = dto.author;
