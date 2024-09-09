@@ -28,7 +28,7 @@ export class BooksService {
     const book = await this.booksRepository.findOneOrNotFoundFail(idN);
     if (!user) throw new ForbiddenException('You are nor registered');
     if (!book) throw new BadRequestException('Somethind bad with book');
-    if (user.age >= 18 && user.age >= book.ageRestriction)
+    if (user.age < 18 || user.age < book.ageRestriction)
       throw new ForbiddenException('Sorry bro, you are too yang now...');
 
     return book;
