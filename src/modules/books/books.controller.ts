@@ -28,7 +28,10 @@ export class BooksController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getBookById(@Param('id') id: string, @Request() req: ReqUserPayLoadJWTInterface): Promise<Book> {
+  async getBookById(
+    @Param('id') id: string,
+    @Request() req: ReqUserPayLoadJWTInterface,
+  ): Promise<Book> {
     return await this.bookService.getBookById(
       parseInt(id),
       parseInt(req.user.userId),
@@ -61,6 +64,6 @@ export class BooksController {
     @Request() req: ReqUserPayLoadJWTInterface,
   ) {
     await this.bookService.deleteBook(parseInt(id), parseInt(req.user.userId));
-    return { response: `OK. The book with ID: ${id} successfully is deleted`};
+    return { response: `OK. The book with ID: ${id} successfully is deleted` };
   }
 }
