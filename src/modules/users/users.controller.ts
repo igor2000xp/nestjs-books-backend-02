@@ -9,12 +9,13 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Post('registration')
-  registerUser(@Body() dto: RegisterUserDto) {
-    return this.userService.registerUser(dto);
+  async registerUser(@Body() dto: RegisterUserDto) {
+    console.log('user.controller', dto);
+    return await this.userService.registerUser(dto);
   }
 
   @Get()
-  getAlUsers() {
-    return this.userService.getAllUsers();
+  async getAlUsers() {
+    return await this.userService.getAllUsers();
   }
 }

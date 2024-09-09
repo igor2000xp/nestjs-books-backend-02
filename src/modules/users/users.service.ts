@@ -1,26 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { User } from './user.entity';
 import { UsersRepository } from './users.repository';
 import { RegisterUserDto } from './dto/register-user.dto';
-import bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(private usersRepository: UsersRepository) {}
   async registerUser(dto: RegisterUserDto): Promise<number> {
-    const passwordHash = await bcrypt.hash(dto.password, 10);
-    const user = new User();
-    user.age = dto.age;
-    user.email = dto.email;
-    user.name = dto.name;
-    user.passwordHash = passwordHash;
+    console.log('user.service = ', dto);
+    let user = await this.usersRepository.findByEmail(dto.email);
+    if (user) throw new BadRequestException('This email is registered already');
+    user = await User.createUser(dto);
 
-    const createdUser = await this.usersRepository.save(user);
-
-    return createdUser.id;
+    return user.id;
   }
 
-  getAllUsers() {
-    return this.usersRepository.findAll();
+  async getAllUsers() {
+    return await this.usersRepository.findAll();
   }
 }
