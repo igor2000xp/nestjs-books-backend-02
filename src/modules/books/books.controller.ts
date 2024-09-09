@@ -26,9 +26,13 @@ export class BooksController {
     return await this.bookService.getAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getBookById(@Param('id') id: string): Promise<Book> {
-    return await this.bookService.getBookById(id);
+  async getBookById(@Param('id') id: string, @Request() req: ReqUserPayLoadJWTInterface): Promise<Book> {
+    return await this.bookService.getBookById(
+      parseInt(id),
+      parseInt(req.user.userId),
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -50,8 +54,13 @@ export class BooksController {
     return this.bookService.updateBook(bookDto, id, req.user.userId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  deleteBook(@Param('id') id: string) {
-    return id;
+  async deleteBook(
+    @Param('id') id: string,
+    @Request() req: ReqUserPayLoadJWTInterface,
+  ) {
+    await this.bookService.deleteBook(parseInt(id), parseInt(req.user.userId));
+    return { response: `OK. The book with ID: ${id} successfully is deleted`};
   }
 }

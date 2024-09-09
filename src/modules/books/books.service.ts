@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Delete,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { BooksRepository } from './books.repository';
 import { Book } from './books.entity';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -18,9 +23,16 @@ export class BooksService {
   }
 
   // Get book by Id
-  async getBookById(id: string): Promise<Book> {
+  async getBookById(id: number, userId: number): Promise<Book> {
     const idN = Number(id);
-    return await this.booksRepository.findOneOrNotFoundFail(idN);
+    const user = await this.usersRepository.findByIdOrNotFoundFail(userId);
+    const book = await this.booksRepository.findOneOrNotFoundFail(idN);
+    if (!user) throw new ForbiddenException('You are nor registered');
+    if (!book) throw new BadRequestException('Somethind bad with book');
+    if (user.age >= 18 && user.age >= book.ageRestriction)
+      throw new ForbiddenException('Sorry bro, you are too yang now...');
+
+    return book;
   }
 
   // Create book and save it into DB
@@ -41,5 +53,21 @@ export class BooksService {
     );
 
     return await book.updateBook(dto, book, parseInt(userId));
+  }
+
+  async deleteBook(id: number, userId: number) {
+    if (!userId)
+      throw new BadRequestException(
+        'You are not register, it is forbidden for you',
+      );
+    const book = await this.booksRepository.findOneOrNotFoundFail(id);
+    if (!book) throw new BadRequestException('There is not such book');
+    const user = await this.usersRepository.findByIdOrNotFoundFail(userId);
+    if (!user)
+      throw new BadRequestException('Something wrong with you registration');
+    if (userId !== book.ownerId)
+      throw new ForbiddenException('It is not your book');
+
+    return await this.booksRepository.remove(id);
   }
 }
