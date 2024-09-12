@@ -24,12 +24,25 @@ export class BooksService {
   // Get book by Id
   async getBookById(id: number, userId: number): Promise<Book> {
     const idN = Number(id);
-    const user = await this.usersRepository.findByIdOrNotFoundFail(userId);
+    let user = null;
+    if (userId) {
+      user = await this.usersRepository.findByIdOrNotFoundFail(userId);
+    }
     const book = await this.booksRepository.findOneOrNotFoundFail(idN);
-    if (!user) throw new ForbiddenException('You are nor registered');
-    if (!book) throw new BadRequestException('Somethind bad with book');
-    if (user.age < 18 || user.age < book.ageRestriction)
-      throw new ForbiddenException('Sorry bro, you are too yang now...');
+    console.log(user);
+    // console.log(user.age, book.ageRestriction);
+    // if (!userId && book.ageRestriction < 18)
+    if (
+      (!user && book.ageRestriction >= 18) ||
+      user?.age < 18 ||
+      user?.age < book.ageRestriction
+    )
+      throw new ForbiddenException(
+        'You are nor registered or bro, you are too yang now...',
+      );
+    if (!book) throw new BadRequestException('Something bad with book');
+    // if (user && user.age < 18 && user.age < book.ageRestriction)
+    //   throw new ForbiddenException('Sorry bro, you are too yang now...');
 
     return book;
   }

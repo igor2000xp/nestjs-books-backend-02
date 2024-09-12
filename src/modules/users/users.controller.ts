@@ -10,7 +10,6 @@ export class UsersController {
 
   @Post('registration')
   async registerUser(@Body() dto: RegisterUserDto) {
-    console.log('user.controller', dto);
     return await this.userService.registerUser(dto);
   }
 

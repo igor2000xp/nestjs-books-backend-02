@@ -8,6 +8,7 @@ import {
   Put,
   UseGuards,
   Request,
+  ForbiddenException,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { Book } from './books.entity';
@@ -15,7 +16,11 @@ import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../core/guards/jwt-auth-guard';
-import { ReqUserPayLoadJWTInterface } from '../../core/guards/jwt.strategy';
+import {
+  JwtStrategy,
+  ReqUserPayLoadJWTInterface,
+} from '../../core/guards/jwt.strategy';
+import { OptionalJwtStrategy } from '../../core/guards/optional-jwt-strategy';
 
 @ApiTags('Books')
 @Controller('books')
@@ -26,16 +31,23 @@ export class BooksController {
     return await this.bookService.getAll();
   }
 
+  // @UseGuards(JwtAuthGuard)
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getBookById(
     @Param('id') id: string,
     @Request() req: ReqUserPayLoadJWTInterface,
   ): Promise<Book> {
-    return await this.bookService.getBookById(
-      parseInt(id),
-      parseInt(req.user.userId),
-    );
+    let userId = 0;
+    console.log('userId-0 = ', req.user?.userId);
+    if (!req.user) {
+      userId = 0;
+    } else {
+      userId = parseInt(req.user.userId);
+    }
+    console.log('userId-1 = ', userId);
+    // if (!req.user.userId) throw new ForbiddenException('You are not authorize');
+    return await this.bookService.getBookById(parseInt(id), userId);
   }
 
   @UseGuards(JwtAuthGuard)
